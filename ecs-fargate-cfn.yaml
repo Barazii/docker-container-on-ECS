@@ -36,8 +36,37 @@ Resources:
               awslogs-region: !Ref AWS::Region
               awslogs-stream-prefix: "ecs"
 
+  ECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref ECSCluster
+      ServiceName: "tservice"
+      TaskDefinition: !Ref ECSTaskDefinition
+      DesiredCount: 1
+      LaunchType: "FARGATE"
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: "ENABLED"
+          Subnets:
+            - subnet-0561b9cca7629ab3f
+            - subnet-09643acd5ad55b251
+            - subnet-0a3edff2547c09e44
+          SecurityGroups:
+            - !Ref ContainerSecurityGroup
+
+  ContainerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security group for port 3000"
+      VpcId: vpc-00cd5dde34aef55a7
+      SecurityGroupIngress:
+        - IpProtocol: "tcp"
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: "0.0.0.0/0"
 
 Outputs:
   ClusterName:
-    Description: Name of the ECS cluster
     Value: !Ref ECSCluster
+  ServiceName:
+    Value: !Ref ECSService
