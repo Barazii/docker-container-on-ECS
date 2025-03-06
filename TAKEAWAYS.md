@@ -1,0 +1,2 @@
+ECS/fargate is a remote computer to run docker containers on.
+ECS 'task definitions' is akin to the container configuration in which the image is run. ECS 'service' is akin to the standalone microapplication. ECS 'task' is akin to the container itself and its port. 'create service' and 'create task' differ.
