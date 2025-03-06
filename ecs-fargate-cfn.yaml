@@ -2,16 +2,40 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: ECS Cluster
 
 Parameters:
-  ClusterName:
+  ImageUrl:
     Type: String
-    Default: "tcluster"
-    Description: Name of the ECS cluster
+    Description: Docker image ecr uri
 
 Resources:
   ECSCluster:
     Type: AWS::ECS::Cluster
     Properties:
-      ClusterName: !Ref ClusterName
+      ClusterName: "tcluster"
+
+  ECSTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: "ttask"
+      NetworkMode: "awsvpc"
+      RequiresCompatibilities:
+        - "FARGATE"
+      Cpu: "1024"  # 1 vCPU
+      Memory: "3072"  # 3 GB
+      ExecutionRoleArn: "arn:aws:iam::482497089777:role/ecsTaskExecutionRole"
+      ContainerDefinitions:
+        - Name: "tcontainer"
+          Image: !Ref ImageUrl
+          PortMappings:
+            - ContainerPort: 3000
+              Protocol: "tcp"
+          Essential: true
+          LogConfiguration:
+            LogDriver: "awslogs"
+            Options:
+              awslogs-group: "/ecs/ttask"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: "ecs"
+
 
 Outputs:
   ClusterName:
